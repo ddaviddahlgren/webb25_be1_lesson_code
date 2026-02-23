@@ -89,6 +89,24 @@ app.put("/api/artists/:id", (req, res) => {
   return res.json(artist  )
 })
 
+app.delete("/api/artists/:id", (req, res) => {
+  const id = Number(req.params.id)
+  if (isNaN(id)) {
+    return res.status(400).json({
+      message: "ID must be a number."
+    })
+  }
+  const index = artists.findIndex((a) => a.id === id)
+  if (index === -1) {
+    return res.status(404).json({
+      message: "Artist does not exist."
+    })
+  }
+
+artists.splice(index, 1)
+return res.status(204).send()
+})
+
 app.listen(PORT,(error) => {
     if(error) {
         console.log("Error in running express", error.message)
