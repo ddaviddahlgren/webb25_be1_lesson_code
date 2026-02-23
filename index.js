@@ -9,7 +9,7 @@ const app = express();
 app.use(cors())
 app.use(express.json())
 
-const PORT = process.env.PORT || 4000
+const PORT = process.env.PORT || 3000
 
 let artists = [
   { id: 1, name: 'Bad Bunny' },
@@ -66,7 +66,7 @@ app.post("/api/artists", (req, res) => {
     return res.status(201).json(artist)
 })
 
-app.put("api/artists/:id", (req, res) => {
+app.put("/api/artists/:id", (req, res) => {
   const id = Number(req.params.id)
   if (isNaN(id)) {
     return res.status(400).json({
