@@ -67,4 +67,4 @@ router.delete("/:id", (req, res) => {
     res.status(204).send()
 })
 
-export default artistsRouter
+export default router
