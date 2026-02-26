@@ -7,3 +7,5 @@ let songs = [
   { id: 2, title: 'Creep', artist: 'Radiohead' },
   { id: 3, title: 'Tití Me Preguntó', artist: 'Bad Bunny' },
 ];
+
+export default router;
