@@ -20,7 +20,7 @@ router.get("/:id", (req, res) => {
     return res.status(404).json({ error: "Artist not found" });
   }
 
-  req.json(artist);
+  res.json(artist);
 });
 
 router.post("/", (req, res) => {
