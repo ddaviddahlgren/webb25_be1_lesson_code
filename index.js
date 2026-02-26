@@ -11,12 +11,6 @@ app.use(express.json())
 
 const PORT = process.env.PORT || 3000
 
-let artists = [
-  { id: 1, name: 'Bad Bunny' },
-  { id: 2, name: 'Zara Larsson' },
-  { id: 3, name: 'Radiohead' },
-];
-
 app.get("/", (req, res) => {
     return res.json({
         message: "Healthy?"
