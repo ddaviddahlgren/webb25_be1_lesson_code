@@ -1,6 +1,7 @@
-import express from "express"
 import dotenv from 'dotenv';
+import express from "express"
 import cors from "cors"
+import artistsRouter from './routes/artists.js';
 
 dotenv.config();
 
@@ -9,97 +10,13 @@ const app = express();
 app.use(cors())
 app.use(express.json())
 
-const PORT = process.env.PORT || 3000
-
 app.get("/", (req, res) => {
-    return res.json({
-        message: "Healthy?"
-    })
+  res.json({ message: "API is healthy!"})
 })
 
-app.get("/api/artists", (req, res) => {
-  const { q } = req.query 
-  if(q) {
-    return res.json(artists.filter(artist => artist.name.includes(q)))
-  }
-  return res.json(artists)
-})
+app.use("/api/artists", artistsRouter)
 
-app.get("/api/artists/:id", (req, res) => {
-  const id = Number(req.params.id)
-  if(isNaN(id)) {
-    return res.status(400).json({
-      message: "Id has to be a valid number"
-    })
-  }
-  const artist = artists.find(artist => artist.id === id)
-  if(!artist) {
-    return res.status(404).json({
-      message: "Artist does not exist"
-    })
-  }
-  return res.json(artist)
-})
-
-app.post("/api/artists", (req, res) => {
-    const { name } = req.body
-    if(!name || typeof name !== "string"){
-      return res.status(400).json({
-        message: "Name is required"
-      })
-    }
-    console.log(artists.map(a => a.id))
-    const lastId = Math.max(...artists.map(a => a.id))
-    console.log(lastId)
-    const artist = {
-      name,
-      id: lastId + 1
-    }
-
-    artists.push(artist)
-    return res.status(201).json(artist)
-})
-
-app.put("/api/artists/:id", (req, res) => {
-  const id = Number(req.params.id)
-  if (isNaN(id)) {
-    return res.status(400).json({
-      message: "ID must be a number."
-    })
-  }
-  const artist = artists.find((a) => a.id === id)
-  if (!artist){
-    return res.status(404).json({
-      message: "Artist does not exist."
-    })
-  }
-  const { name } = req.body
-  if (!name || typeof name !== "string"){
-    return res.status(400).json({
-      message: "A name is required."
-    })
-  }
-  artist.name = name
-  return res.json(artist  )
-})
-
-app.delete("/api/artists/:id", (req, res) => {
-  const id = Number(req.params.id)
-  if (isNaN(id)) {
-    return res.status(400).json({
-      message: "ID must be a number."
-    })
-  }
-  const index = artists.findIndex((a) => a.id === id)
-  if (index === -1) {
-    return res.status(404).json({
-      message: "Artist does not exist."
-    })
-  }
-
-artists.splice(index, 1)
-return res.status(204).send()
-})
+const PORT = process.env.PORT || 3000
 
 app.listen(PORT,(error) => {
     if(error) {
