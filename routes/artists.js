@@ -1,70 +1,78 @@
-import { Router } from "express";
+import { Router } from "express"
+import {
+  getAllArtists,
+  getArtistByid,
+  createArtist,
+  updateArtist,
+  deleteArtist,
+} from "../db/artists.js"
+const artistRouter = Router()
 
-const router = Router();
-
-let artists = [
-  { id: 1, name: "Bad Bunny" },
-  { id: 2, name: "Zara Larsson" },
-  { id: 3, name: "Radiohead" },
-];
-
-router.get("/", (req, res) => {
-  res.json(artists);
-});
-
-router.get("/:id", (req, res) => {
-  const id = Number(req.params.id);
-  const artist = artists.find((a) => a.id === id);
-
-  if (!artist) {
-    return res.status(404).json({ error: "Artist not found" });
-  }
-
-  res.json(artist);
-});
-
-router.post("/", (req, res) => {
-  const { name } = req.body;
-
-  if (!name) {
-    return res.status(400).json({ error: "A name is required" });
-  }
-
-  const lastId = artists.length > 0 ? artists[artists.length - 1].id : 0;
-  const newArtist = { id: lastId + 1, name };
-
-  artists.push(newArtist);
-  res.status(201).json(newArtist);
-});
-
-router.put("/:id", (req, res) => {
-  const id = Number(req.params.id);
-  const artist = artists.find((a) => a.id === id);
-
-  if (!artist) {
-    return res.status(404).json({ error: "Artist not found" });
-  }
-
-  const { name } = req.body
-
-  if (!name) {
-    return res.status(400).json({ error: "A name is required" });
-  }
-
-  artist.name = name
-  res.json(artist)
-});
-
-router.delete("/:id", (req, res) => {
-    const id = Number(req.params.id)
-    const index = artists.findIndex((a) => a.id === id)
-
-    if (index === -1){
-        return req.status(404).json({ error: "Artist not found" })
-    }
-
-    artists.splice(index, 1)
-    res.status(204).send()
+artistRouter.get("/", async (req, res) => {
+  const artists = await getAllArtists()
+  return res.json(artists)
 })
 
-export default router
+artistRouter.get("/:id", async (req, res) => {
+  const id = Number(req.params.id)
+  if (isNaN(id)) {
+    return res.status(400).json({
+      message: "Id has to be a valid number",
+    })
+  }
+  const artist = await getArtistByid(id)
+  if (!artist) {
+    return res.status(404).json({
+      message: "Artist does not exist",
+    })
+  }
+  return res.json(artist)
+})
+
+artistRouter.post("/", async (req, res) => {
+  const { name } = req.body
+  if (!name || typeof name !== "string") {
+    return res.status(400).json({
+      message: "Name is required",
+    })
+  }
+  const artist = await createArtist({ name })
+
+  return res.status(201).json(artist)
+})
+
+// Uppgift 1
+artistRouter.put("/:id", (req, res) => {
+  const id = Number(req.params.id)
+  const { name } = req.body
+  if (!name || typeof name !== "string") {
+    return res.status(400).json({
+      message: "New artist name is required",
+    })
+  }
+  const updatedArtist = updateArtist(id, { name })
+  if (!updatedArtist) {
+    return res.status(404).json({
+      message: "Artist does not exist",
+    })
+  }
+
+  return res.status(200).json(updatedArtist)
+})
+
+// UPPGIFT 2
+artistRouter.delete("/:id", (req, res) => {
+  const id = Number(req.params.id)
+
+  const deleted = deleteArtist(id)
+
+  if (!deleted) {
+    return res.status(404).json({
+      message: "Artist was not deleted or found",
+    })
+  }
+
+  return res.status(204).json()
+})
+
+export default artistRouter

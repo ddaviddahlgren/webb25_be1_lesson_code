@@ -1,7 +1,8 @@
 import dotenv from 'dotenv';
 import express from "express"
 import cors from "cors"
-import artistsRouter from './routes/artists.js';
+import artistRouter from "./routes/artists.js"
+import songRouter from "./routes/songs.js"
 
 dotenv.config();
 
@@ -14,8 +15,8 @@ app.get("/", (req, res) => {
   res.json({ message: "API is healthy!"})
 })
 
-app.use("/api/artists", artistsRouter)
-
+app.use("/api/artists", artistRouter)
+app.use("/api/songs", songRouter)
 const PORT = process.env.PORT || 3000
 
 app.listen(PORT,(error) => {
