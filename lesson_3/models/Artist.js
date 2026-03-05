@@ -11,6 +11,8 @@ const artistSchema = new  mongoose.Schema({
     timestamps: true
 })
 
+artistSchema.index({ name: "text" })
+
 const Artist = mongoose.model("Artist", artistSchema)
 
 
