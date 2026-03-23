@@ -28,17 +28,10 @@ export function requireAuth(req, res, next) {
 
 export function requireAdmin(req, res, next) {
 
-  try {
     if(req.userRole !== 'admin'){
       return res.status(403).json({
         message: "Forbidden"
       })
     }
     next()
-  } catch (error) {
-    return res.status(403).json({
-      message: "Forbidden"
-    })
-  }
-
 }
