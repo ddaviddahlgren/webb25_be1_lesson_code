@@ -1,5 +1,6 @@
 import { Router } from "express"
 import { getAllAlbums, getAlbumByid, createAlbum, updateAlbum, deleteAlbum } from "../db/albums.js"
+import { requireAuth, requireAdmin } from "../middlewares/auth.js"
 const albumRouter = Router()
 
 albumRouter.get("/", async (req, res) => {
@@ -14,7 +15,7 @@ albumRouter.get("/:id", async (req, res) => {
   return res.json(album)
 })
 
-albumRouter.post("/", async (req, res) => {
+albumRouter.post("/", requireAuth, requireAdmin, async (req, res) => {
     const { title, artist, releaseDate } = req.body
     const hasTitle = title && typeof title === "string"
     const hasArtist = artist && typeof artist === "string"
@@ -32,7 +33,7 @@ albumRouter.post("/", async (req, res) => {
   return res.json(album)
 })
 
-albumRouter.put("/:id", async (req, res) => {
+albumRouter.put("/:id", requireAuth, requireAdmin, async (req, res) => {
   const { id } = req.params
     const { title, artist, releaseDate } = req.body
     const hasTitle = title && typeof title === "string"
@@ -51,7 +52,7 @@ albumRouter.put("/:id", async (req, res) => {
   return res.json(album)
 })
 
-albumRouter.delete("/:id", async (req, res) => {
+albumRouter.delete("/:id", requireAuth, requireAdmin, async (req, res) => {
   const { id } = req.params
     const album = await deleteAlbum(id)
     if (!album) {

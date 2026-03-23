@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { verifyAccessToken, verifyRefreshToken } from "../utils/tokens.js";
+import { verifyRefreshToken } from "../utils/tokens.js";
 import { getUserById, registerUser, loginUser, refreshAccessToken, requestPassword, confirmPasswordReset } from "../db/auth.js";
-import { requireAuth } from "../middlewares/auth.js";
+import { requireAdmin, requireAuth } from "../middlewares/auth.js";
 
 const authRouter = Router();
 
@@ -147,6 +147,12 @@ authRouter.patch("/reset-password/confirm", async (req, res) => {
       message: "Unable to reset password"
     })
   }
+})
+
+authRouter.get("/admin", requireAuth, requireAdmin, (req, res) => {
+  res.json({
+    message: "Welcome admin"
+  })
 })
 
 export default authRouter;
