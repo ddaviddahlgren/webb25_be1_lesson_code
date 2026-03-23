@@ -9,17 +9,13 @@ import {
 const artistRouter = Router()
 
 artistRouter.get("/", async (req, res) => {
-  const artists = await getAllArtists()
+  const { q } = req.query
+  const artists = await getAllArtists(q)
   return res.json(artists)
 })
 
 artistRouter.get("/:id", async (req, res) => {
-  const id = Number(req.params.id)
-  if (isNaN(id)) {
-    return res.status(400).json({
-      message: "Id has to be a valid number",
-    })
-  }
+  const id = req.params.id
   const artist = await getArtistByid(id)
   if (!artist) {
     return res.status(404).json({
@@ -31,26 +27,34 @@ artistRouter.get("/:id", async (req, res) => {
 
 artistRouter.post("/", async (req, res) => {
   const { name } = req.body
-  if (!name || typeof name !== "string") {
+  const hasName = name && typeof name === "string"
+  if (!hasName) {
     return res.status(400).json({
       message: "Name is required",
     })
   }
   const artist = await createArtist({ name })
 
+  if(!artist) {
+    return res.status(409).json({
+      message: `Artist with name '${name}' allready exists`,
+    })
+  }
+
   return res.status(201).json(artist)
 })
 
-// Uppgift 1
-artistRouter.put("/:id", (req, res) => {
-  const id = Number(req.params.id)
+artistRouter.put("/:id", async (req, res) => {
+  const id = req.params.id
   const { name } = req.body
-  if (!name || typeof name !== "string") {
+
+  const hasName = name && typeof name === "string"
+  if (!hasName) {
     return res.status(400).json({
       message: "New artist name is required",
     })
   }
-  const updatedArtist = updateArtist(id, { name })
+  const updatedArtist = await updateArtist(id, { name })
   if (!updatedArtist) {
     return res.status(404).json({
       message: "Artist does not exist",
@@ -60,11 +64,10 @@ artistRouter.put("/:id", (req, res) => {
   return res.status(200).json(updatedArtist)
 })
 
-// UPPGIFT 2
-artistRouter.delete("/:id", (req, res) => {
-  const id = Number(req.params.id)
+artistRouter.delete("/:id", async (req, res) => {
+  const id = req.params.id
 
-  const deleted = deleteArtist(id)
+  const deleted = await deleteArtist(id)
 
   if (!deleted) {
     return res.status(404).json({
